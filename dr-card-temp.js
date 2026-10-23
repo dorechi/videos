@@ -1,0 +1,11 @@
+/* DoRechi: DR card temp v1 - warmth pill on catalog cards */
+(function(){if(window.__drCardTemp)return;window.__drCardTemp=1;
+var EN=/^\/en(\/|$)/.test(location.pathname);
+var W20=['+5 до -20 °C','+5 to -20 °C','s'],W10=['+5 до -10 °C','+5 to -10 °C','s'],D20=['+5 до +20 °C','+5 to +20 °C','l'],D25=['+5 до +25 °C','+5 to +25 °C','l'],F15=['від +15 °C','from +15 °C','l'];
+var SKIP=/Basic|sleeping bag|Діскавері Червоний|Discovery Red|Матрасик|Seat Liner/i;
+var RULES=[[/Діскавері|Discovery/i,W20],[/Аполло|Apollo/i,W20],[/Напівкомбінезон|Snow Pants/i,W20],[/Baby XS/i,W20],[/Тренд|Trend/i,W20],[/Муфта|Hand Muff/i,W20],[/Шапка зимова|Winter Beanie/i,W20],[/Снуд зимовий|Merino Wool Mix Snood/i,W20],[/Шапка демісезонна|Снуд демісезонний|Cotton Mid-season|Cotton Beanie/i,D20],[/Еклер|Eclair/i,D20],[/Зефір|Zefir/i,D20],[/Куртка демісезонна|Mid-season Jacket/i,D25],[/Вітровка|Windbreaker/i,F15],[/Пінетки зимові|Winter Booties/i,W10],[/Пінетки демісезонні|Mid-season Booties/i,D25],[/Рукавички з вовною|Merino Wool Mix Baby Mittens/i,W10],[/Рукавички зимові мембранні|Waterproof Winter Mittens/i,W20]];
+var IC={s:'<path d="M12 2v20M4.9 7l14.2 10M4.9 17L19.1 7"/><path d="M9.5 3.5L12 6l2.5-2.5M9.5 20.5L12 18l2.5 2.5"/>',l:'<path d="M14 14.8V5a2 2 0 1 0-4 0v9.8a4 4 0 1 0 4 0z"/><path d="M12 9v7"/>'};
+function pick(t){if(!t||SKIP.test(t))return null;for(var i=0;i<RULES.length;i++)if(RULES[i][0].test(t))return RULES[i][1];return null}
+function run(){var cards=document.querySelectorAll('.catalogCard:not([data-drct]),.catalog-card:not([data-drct])');for(var i=0;i<cards.length;i++){var c=cards[i];c.setAttribute('data-drct','1');var a=c.querySelector('.catalogCard-title a,.catalog-card__title a');var v=pick(a&&a.textContent);if(!v)continue;var host=c.querySelector('.catalogCard-image,.catalog-card__image');if(!host)continue;host.classList.add('dr-ct-host');var s=document.createElement('span');s.className='dr-ct';s.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true">'+IC[v[2]]+'</svg>'+(EN?v[1]:v[0]);host.appendChild(s)}}
+run();if(window.MutationObserver){var to;new MutationObserver(function(){clearTimeout(to);to=setTimeout(run,150)}).observe(document.body,{childList:true,subtree:true})}
+})();
