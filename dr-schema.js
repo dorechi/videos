@@ -1,4 +1,4 @@
-/* DoRechi: DR product schema v2 (23 Oct 2026) - adds material, audience age, additionalProperty, offer return policy + shipping and VideoObject to the Product microdata on dorechi.ua product pages */
+/* DoRechi: DR product schema v2.2 (23 Oct 2026) - adds material, audience age, additionalProperty, offer return policy + shipping and VideoObject to the Product microdata on dorechi.ua product pages */
 (function(){var f=function drSchema(){
   if(window.__drSchema)return;window.__drSchema=1;
   var EN=/^\/en\//.test(location.pathname);
@@ -52,7 +52,7 @@
     R[3].forEach(function(p){var pv=E('div','additionalProperty','PropertyValue');pv.appendChild(meta('name',p[L]));pv.appendChild(meta('value',p[2+L]));box.appendChild(pv);});
   }
   if(box.children.length)P.appendChild(box);
-  /* v2: offer-level return policy (14 days from delivery) and free shipping from 2500 UAH, delivery 1-3 days (nothing below - carrier rates) - UA pages with UAH prices only */
+  /* v2: offer-level return policy (14 days from delivery) and shipping: dispatch 1-2 days + delivery 1-3 days on all products, rate 0 only from 2500 UAH (no rate below - carrier rates) - UA pages with UAH prices only */
   var O=P.querySelector('[itemprop="offers"]'),cu=O&&O.querySelector('[itemprop="priceCurrency"]');
   if(!EN&&O&&cu&&cu.getAttribute('content')==='UAH'&&!O.querySelector('.dr-of')){
     var ob=E('div');ob.className='dr-of';ob.hidden=true;
@@ -60,13 +60,12 @@
     [['applicableCountry','UA'],['returnPolicyCategory','https://schema.org/MerchantReturnFiniteReturnWindow'],['merchantReturnDays',14],['returnMethod','https://schema.org/ReturnByMail'],['returnFees','https://schema.org/ReturnFeesCustomerResponsibility']].forEach(function(a){rp.appendChild(meta(a[0],a[1]));});
     ob.appendChild(rp);
     var pe=O.querySelector('[itemprop="price"]'),pr=parseFloat(pe?(pe.getAttribute('content')||pe.textContent):'');
-    if(pr>=2500){
-      var sd=E('div','shippingDetails','OfferShippingDetails'),sr=E('div','shippingRate','MonetaryAmount');
-      sr.appendChild(meta('value',0));sr.appendChild(meta('currency','UAH'));sd.appendChild(sr);
-      var de=E('div','shippingDestination','DefinedRegion');de.appendChild(meta('addressCountry','UA'));sd.appendChild(de);
-      var dl=E('div','deliveryTime','ShippingDeliveryTime'),tt=E('div','transitTime','QuantitativeValue');tt.appendChild(meta('minValue',1));tt.appendChild(meta('maxValue',3));tt.appendChild(meta('unitCode','DAY'));dl.appendChild(tt);sd.appendChild(dl);
-      ob.appendChild(sd);
-    }
+    var sd=E('div','shippingDetails','OfferShippingDetails');
+    if(pr>=2500){var sr=E('div','shippingRate','MonetaryAmount');sr.appendChild(meta('value',0));sr.appendChild(meta('currency','UAH'));sd.appendChild(sr);}
+    var de=E('div','shippingDestination','DefinedRegion');de.appendChild(meta('addressCountry','UA'));sd.appendChild(de);
+    var dl=E('div','deliveryTime','ShippingDeliveryTime');
+    [['handlingTime',1,2],['transitTime',1,3]].forEach(function(a){var q=E('div',a[0],'QuantitativeValue');q.appendChild(meta('minValue',a[1]));q.appendChild(meta('maxValue',a[2]));q.appendChild(meta('unitCode','DAY'));dl.appendChild(q);});
+    sd.appendChild(dl);ob.appendChild(sd);
     O.appendChild(ob);
   }
   var VD={'1812_F':'2026-10-03','1842F':'2026-10-03','1891':'2026-10-04','1898_68':'2026-10-06','1899_74':'2026-10-06','2074':'2026-10-03','2076':'2026-10-05','2087-v2':'2026-10-03','2087':'2026-10-03','2089F':'2026-10-03','2095 O':'2026-10-15','2095-v2':'2026-10-05','2095-v3':'2026-10-05','2095':'2026-10-05','2095_74_O':'2026-10-15','2107-v3':'2026-10-03','2107':'2026-10-03','2109-hd':'2026-10-14','2109-hd2':'2026-10-14','2109':'2026-10-03','2110-hd':'2026-10-14','2110':'2026-10-03','2111':'2026-10-03','2119':'2026-10-04','2120':'2026-10-04','2120_74_O':'2026-10-16','2121':'2026-10-04','windbreaker_white':'2026-10-03'};
