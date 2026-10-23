@@ -52,7 +52,7 @@
     R[3].forEach(function(p){var pv=E('div','additionalProperty','PropertyValue');pv.appendChild(meta('name',p[L]));pv.appendChild(meta('value',p[2+L]));box.appendChild(pv);});
   }
   if(box.children.length)P.appendChild(box);
-  /* v2: offer-level return policy (14 days from delivery) and free shipping from 2500 UAH (nothing below - carrier rates) - UA pages with UAH prices only */
+  /* v2: offer-level return policy (14 days from delivery) and free shipping from 2500 UAH, delivery 1-3 days (nothing below - carrier rates) - UA pages with UAH prices only */
   var O=P.querySelector('[itemprop="offers"]'),cu=O&&O.querySelector('[itemprop="priceCurrency"]');
   if(!EN&&O&&cu&&cu.getAttribute('content')==='UAH'&&!O.querySelector('.dr-of')){
     var ob=E('div');ob.className='dr-of';ob.hidden=true;
@@ -64,6 +64,7 @@
       var sd=E('div','shippingDetails','OfferShippingDetails'),sr=E('div','shippingRate','MonetaryAmount');
       sr.appendChild(meta('value',0));sr.appendChild(meta('currency','UAH'));sd.appendChild(sr);
       var de=E('div','shippingDestination','DefinedRegion');de.appendChild(meta('addressCountry','UA'));sd.appendChild(de);
+      var dl=E('div','deliveryTime','ShippingDeliveryTime'),tt=E('div','transitTime','QuantitativeValue');tt.appendChild(meta('minValue',1));tt.appendChild(meta('maxValue',3));tt.appendChild(meta('unitCode','DAY'));dl.appendChild(tt);sd.appendChild(dl);
       ob.appendChild(sd);
     }
     O.appendChild(ob);
