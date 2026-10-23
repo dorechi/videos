@@ -1,4 +1,4 @@
-/* DoRechi: DR product schema v1 (22 Oct 2026) - adds material, audience age, additionalProperty and VideoObject to the Product microdata on dorechi.ua product pages */
+/* DoRechi: DR product schema v2 (23 Oct 2026) - adds material, audience age, additionalProperty, offer return policy + shipping and VideoObject to the Product microdata on dorechi.ua product pages */
 (function(){var f=function drSchema(){
   if(window.__drSchema)return;window.__drSchema=1;
   var EN=/^\/en\//.test(location.pathname);
@@ -47,10 +47,27 @@
   var m=N.match(/,\s*(\d{2,3}(?:-\d{2,3})?)\s*$/);if(m)box.appendChild(meta('size',m[1]+(EN?' cm':' см')));
   if(R){
     if(R[1])box.appendChild(meta('material',R[1][L]));
-    if(R[2]){var au=E('div','audience','PeopleAudience'),ag=E('div','suggestedAge','QuantitativeValue');ag.appendChild(meta('minValue',R[2][0]));ag.appendChild(meta('maxValue',R[2][1]));ag.appendChild(meta('unitCode','MON'));au.appendChild(ag);box.appendChild(au);}
+    if(R[2]){if([0,3,12].indexOf(R[2][0])>-1){var au=E('div','audience','PeopleAudience'),ag=E('div','suggestedAge','QuantitativeValue');ag.appendChild(meta('minValue',R[2][0]));ag.appendChild(meta('maxValue',R[2][1]));ag.appendChild(meta('unitCode','MON'));au.appendChild(ag);box.appendChild(au);}
+      else R[3]=R[3].concat([['Орієнтовний вік','Approximate age',R[2][0]+'-'+R[2][1]+' міс',R[2][0]+'-'+R[2][1]+' months']]);}
     R[3].forEach(function(p){var pv=E('div','additionalProperty','PropertyValue');pv.appendChild(meta('name',p[L]));pv.appendChild(meta('value',p[2+L]));box.appendChild(pv);});
   }
   if(box.children.length)P.appendChild(box);
+  /* v2: offer-level return policy (14 days from delivery) and free shipping from 2500 UAH (nothing below - carrier rates) - UA pages with UAH prices only */
+  var O=P.querySelector('[itemprop="offers"]'),cu=O&&O.querySelector('[itemprop="priceCurrency"]');
+  if(!EN&&O&&cu&&cu.getAttribute('content')==='UAH'&&!O.querySelector('.dr-of')){
+    var ob=E('div');ob.className='dr-of';ob.hidden=true;
+    var rp=E('div','hasMerchantReturnPolicy','MerchantReturnPolicy');
+    [['applicableCountry','UA'],['returnPolicyCategory','https://schema.org/MerchantReturnFiniteReturnWindow'],['merchantReturnDays',14],['returnMethod','https://schema.org/ReturnByMail'],['returnFees','https://schema.org/ReturnFeesCustomerResponsibility']].forEach(function(a){rp.appendChild(meta(a[0],a[1]));});
+    ob.appendChild(rp);
+    var pe=O.querySelector('[itemprop="price"]'),pr=parseFloat(pe?(pe.getAttribute('content')||pe.textContent):'');
+    if(pr>=2500){
+      var sd=E('div','shippingDetails','OfferShippingDetails'),sr=E('div','shippingRate','MonetaryAmount');
+      sr.appendChild(meta('value',0));sr.appendChild(meta('currency','UAH'));sd.appendChild(sr);
+      var de=E('div','shippingDestination','DefinedRegion');de.appendChild(meta('addressCountry','UA'));sd.appendChild(de);
+      ob.appendChild(sd);
+    }
+    O.appendChild(ob);
+  }
   var VD={'1812_F':'2026-10-03','1842F':'2026-10-03','1891':'2026-10-04','1898_68':'2026-10-06','1899_74':'2026-10-06','2074':'2026-10-03','2076':'2026-10-05','2087-v2':'2026-10-03','2087':'2026-10-03','2089F':'2026-10-03','2095 O':'2026-10-15','2095-v2':'2026-10-05','2095-v3':'2026-10-05','2095':'2026-10-05','2095_74_O':'2026-10-15','2107-v3':'2026-10-03','2107':'2026-10-03','2109-hd':'2026-10-14','2109-hd2':'2026-10-14','2109':'2026-10-03','2110-hd':'2026-10-14','2110':'2026-10-03','2111':'2026-10-03','2119':'2026-10-04','2120':'2026-10-04','2120_74_O':'2026-10-16','2121':'2026-10-04','windbreaker_white':'2026-10-03'};
   var tries=0;
   (function vid(){
